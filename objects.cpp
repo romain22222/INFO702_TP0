@@ -245,7 +245,7 @@ void NiceAsteroid::advance(int step)
     if (!step)
         return;
     setPos(mapToParent(_speed, 0.0));
-    _t->setAngle(_t->_  a + 2.0);
+    _t->setAngle(_t->_a + 2.0);
     MasterShape::advance(step);
 }
 

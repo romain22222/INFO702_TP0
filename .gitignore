@@ -1,2 +1,7 @@
 /README.txt
 /.idea/
+/collider.o
+/objects.o
+/qrc_collider.cpp
+/qrc_collider.o
+/collider
