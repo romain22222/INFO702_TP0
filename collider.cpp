@@ -10,10 +10,11 @@
 #include <QtWidgets>
 #include "objects.hpp"
 
-static const int AsteroidCount = 3;
+static const int AsteroidCount = -1;
 static const int RectangleCount = 2;
 static const int EnterpriseCount = 1;
-static const int NiceCount = 1;
+static const int NiceCount = 3;
+QRandomGenerator RGMain;
 
 void testLogicalView(MasterShape* shape, QGraphicsScene& view) {
     QColor cko( 255, 240, 0 );
@@ -26,12 +27,6 @@ void testLogicalView(MasterShape* shape, QGraphicsScene& view) {
 
 void testIsInside(MasterShape* shape, QGraphicsScene& view) {
     QColor cko( 255, 240, 0 );
-    MasterShape* a = new Asteroid( cko, cko, 0, 50);
-    a->setPos(shape->boundingRect().bottomLeft());
-    view.addItem( a );
-    MasterShape* a2 = new Asteroid( cko, cko, 0, 50);
-    a2->setPos(shape->boundingRect().topRight());
-    view.addItem( a2 );
     for (int i = 0; i < IMAGE_SIZE; ++i) {
         for (int j = 0; j < IMAGE_SIZE; ++j) {
             if (shape->isInside(QPointF(i,j))) {
@@ -43,6 +38,24 @@ void testIsInside(MasterShape* shape, QGraphicsScene& view) {
     }
 }
 
+void testBoundingRect(MasterShape* shape, QGraphicsScene& view) {
+    QColor cko( 100, 0, 0 );
+    MasterShape* a = new Asteroid( cko, cko, 0, 50);
+    a->setPos(shape->boundingRect().topLeft());
+    view.addItem( a );
+    QColor cok( 200, 0, 0 );
+    MasterShape* a2 = new Asteroid( cok, cok, 0, 50);
+    a2->setPos(shape->boundingRect().bottomRight());
+    view.addItem( a2 );
+    QColor coo( 0, 200, 0 );
+    MasterShape* a3 = new Asteroid( coo, coo, 0, 50);
+    a3->setPos(shape->boundingRect().bottomLeft());
+    view.addItem( a3 );
+    QColor ckk( 0, 100, 0 );
+    MasterShape* a4 = new Asteroid( ckk, ckk, 0, 50);
+    a4->setPos(shape->boundingRect().topRight());
+    view.addItem( a4 );
+}
 
 int main(int argc, char **argv)
 {
@@ -67,10 +80,10 @@ int main(int argc, char **argv)
 
     // A master shape gathers all the elements of the shape.
     MasterShape* asteroid = new Asteroid( cok, cko,
-                                          0,//( rand() % 20 + 20 ) / 10.0 /* speed */,
-                                          (double) (10 + rand() % 40) /* radius */ );
+                                          RGMain.generateDouble() * 2 + 2  /* speed */,
+                                          10. + RGMain.generateDouble() * 40. /* radius */ );
     // Set direction and position
-    asteroid->setRotation(rand() % 360);
+    asteroid->setRotation(RGMain.generateDouble() * 360);
     asteroid->setPos( IMAGE_SIZE/2 + ::sin((i * 6.28) / AsteroidCount) * 200,
                       IMAGE_SIZE/2 + ::cos((i * 6.28) / AsteroidCount) * 200 );
     // Add it to the graphical scene
@@ -80,14 +93,14 @@ int main(int argc, char **argv)
   }
 
   for (int i = 0; i < RectangleCount; ++i) {
-    QColor cok( 150, 130, 110 );
+    QColor cok( 0, 130, 0 );
     QColor cko( 255, 240, 0 );
 
     // A master shape gathers all the elements of the shape.
     MasterShape* spaceTruck = new SpaceTruck( cok, cko,
-                                            0);//( rand() % 20 + 20 ) / 10.0 /* speed */);
+                                              RGMain.generateDouble() * 2. + 2. /* speed */);
     // Set direction and position
-    spaceTruck->setRotation(rand() % 360);
+    spaceTruck->setRotation(RGMain.generateDouble() * 360.);
     spaceTruck->setPos( IMAGE_SIZE/2 + ::sin((i * 6.28) / RectangleCount) * 200,
                       IMAGE_SIZE/2 + ::cos((i * 6.28) / RectangleCount) * 200 );
     // Add it to the graphical scene
@@ -97,12 +110,12 @@ int main(int argc, char **argv)
   }
 
   for (int i = 0; i < EnterpriseCount; ++i) {
-    QColor cok( 150, 130, 110 );
+    QColor cok( 150, 0, 0 );
     QColor cko( 255, 240, 0 );
 
     // A master shape gathers all the elements of the shape.
     MasterShape* enterprise = new Enterprise( cok, cko,
-                                            0);//( rand() % 20 + 10.0 ) / 10.0 /* speed */);
+                                              RGMain.generateDouble() * 2. + 1.);
     enterprise->setPos( IMAGE_SIZE/2.0, IMAGE_SIZE/2.0);
     // Add it to the graphical scene
     graphical_scene.addItem( enterprise );
@@ -114,18 +127,16 @@ int main(int argc, char **argv)
   for (int i = 0; i < NiceCount; ++i) {
       QColor cok( 150, 130, 110 );
       QColor cko( 255, 240, 0 );
-
-      // A master shape gathers all the elements of the shape.
       MasterShape* nice_asteroid = new NiceAsteroid( cok, cko,
-                                              ( rand() % 20 + 10.0 ) / 10.0 /* speed */,
+                                                     RGMain.generateDouble() * 2. + 1. /* speed */,
                                               *asteroid_pixmap);
-//       nice_asteroid->setPos( IMAGE_SIZE/2 + ::sin((i * 6.28) / NiceCount) * 200,
-//                           IMAGE_SIZE/2 + ::cos((i * 6.28) / NiceCount) * 200 );
-      // Add it to the graphical scene
+      nice_asteroid->setPos( IMAGE_SIZE/2 + ::sin((i * 6.28) / NiceCount) * 200,
+                          IMAGE_SIZE/2 + ::cos((i * 6.28) / NiceCount) * 200 );
+      nice_asteroid->setRotation(RGMain.generateDouble() * 360.);
       graphical_scene.addItem( nice_asteroid );
       //testLogicalView(nice_asteroid, graphical_scene);
       //testIsInside(nice_asteroid, graphical_scene);
-      // and to the logical scene
+      //testBoundingRect(nice_asteroid, graphical_scene);
       logical_scene->formes.push_back( nice_asteroid );
     }
 

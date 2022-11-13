@@ -141,7 +141,7 @@ Transformation::Transformation(GraphicalShape *f, QPointF dx, qreal angle)
     _f->setParentItem(this);
     setPos(pos() + _dx);
     setRotation(rotation() + _a);
-};
+}
 
 QPointF
 Transformation::randomPoint() const
@@ -164,7 +164,7 @@ bool Transformation::isInside(const QPointF &p) const
 QRectF
 Transformation::boundingRect() const
 {
-    return _f->boundingRect();
+    return mapRectToParent(_f->boundingRect());
 }
 
 void Transformation::setAngle(double a)
@@ -210,7 +210,7 @@ bool ImageShape::isInside(const QPointF &p) const
 QRectF
 ImageShape::boundingRect() const
 {
-    return QRectF(pos(), _pixmap.size());
+    return QRectF(QPointF(0,0), _pixmap.size());
 }
 
 void ImageShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -245,7 +245,8 @@ void NiceAsteroid::advance(int step)
     if (!step)
         return;
     setPos(mapToParent(_speed, 0.0));
-    _t->setAngle(_t->_a + 2.0);
+//    setRotation(rotation() + RG.generateDouble() * _speed / 10. - _speed / 20.);
+    _t->setAngle(_t->_a + RG.generateDouble() * _speed / 10. - _speed / 20.);
     MasterShape::advance(step);
 }
 
@@ -390,7 +391,7 @@ void SpaceTruck::advance(int step)
         return;
     setPos(mapToParent(_speed, 0.0));
     // setrotation with slow speed
-    setRotation(rotation() + RG.generateDouble() * 2.0);
+    setRotation(rotation() + RG.generateDouble() * _speed - _speed / 2);
     MasterShape::advance(step);
 }
 
@@ -425,8 +426,8 @@ void Enterprise::advance(int step)
 {
     if (!step)
         return;
-    setRotation(rotation() + RG.generateDouble() * _speed / 10.);
     setPos(mapToParent(_speed, 0.0));
+    setRotation(rotation() + RG.generateDouble() * _speed / 10. - _speed / 15.);
     MasterShape::advance(step);
 }
 
